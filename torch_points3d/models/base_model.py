@@ -187,13 +187,13 @@ class BaseModel(torch.nn.Module, TrackerInterface, DatasetInterface, CheckpointI
         else:
             raise Exception("The attributes {} should be defined within self".format(update_scheduler_on))
 
-    def optimize_parameters(self, epoch, batch_size):
+    def optimize_parameters(self, epoch, batch_size, data):
         """Calculate losses, gradients, and update network weights; called in every training iteration"""
         self._num_epochs = epoch
         self._num_batches += 1
         self._num_samples += batch_size
 
-        self.forward(epoch=epoch)  # first call forward to calculate intermediate results
+        self.forward(epoch=epoch, data=data)  # first call forward to calculate intermediate results
         make_optimizer_step = self._manage_optimizer_zero_grad()  # Accumulate gradient if option is up
         self.backward()  # calculate gradients
 

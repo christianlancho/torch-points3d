@@ -117,6 +117,7 @@ class Trainer:
             Wandb.launch(self._cfg, not self._cfg.wandb.public and self.wandb_log)
 
         # Run training / evaluation
+        self._model.model = torch.nn.DataParallel(self._model.model, device_ids=[2, 3]) 
         self._model = self._model.to(self._device)
         if self.has_visualization:
             self._visualizer = Visualizer(
@@ -182,8 +183,8 @@ class Trainer:
             for i, data in enumerate(tq_train_loader):
                 t_data = time.time() - iter_data_time
                 iter_start_time = time.time()
-                self._model.set_input(data, self._device)
-                self._model.optimize_parameters(epoch, self._dataset.batch_size)
+                # self._model.set_input(data, self._device)
+                self._model.optimize_parameters(epoch, self._dataset.batch_size, data)
                 if i % 10 == 0:
                     with torch.no_grad():
                         self._tracker.track(self._model, data=data, **self.tracker_options)

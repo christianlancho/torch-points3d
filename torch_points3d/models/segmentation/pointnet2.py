@@ -62,7 +62,7 @@ class PointNet2_D(UnetBasedModel):
 
         self.visual_names = ["data_visual"]
 
-    def set_input(self, data, device):
+    def set_input(self, data):
         """Unpack input data from the dataloader and perform necessary pre-processing steps.
         Parameters:
             input: a dictionary that contains the data itself and its metadata information.
@@ -72,6 +72,7 @@ class PointNet2_D(UnetBasedModel):
                 pos -- Points [B, N, 3]
         """
         assert len(data.pos.shape) == 3
+        device = self.device
         data = data.to(device)
         if data.x is not None:
             x = data.x.transpose(1, 2).contiguous()
@@ -93,6 +94,7 @@ class PointNet2_D(UnetBasedModel):
                 x -- Features [B, C, N]
                 pos -- Points [B, N, 3]
         """
+        self.set_input(kwargs['data'])
         data = self.model(self.input)
         last_feature = data.x
         if self._use_category:
